@@ -1,0 +1,13 @@
+pydantic
+groq
+langchain
+langchain-community
+langchain-core==0.1.4
+langchain-groq
+langsmith
+openai
+pandas==1.5.1
+pyarrow==15.0.0
+requests==2.31.0
+streamlit==1.31.0
+rapidfuzz
