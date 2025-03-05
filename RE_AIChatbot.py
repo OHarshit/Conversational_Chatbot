@@ -52,7 +52,10 @@ def main():
     # )
 
     # model = 'llama3-8b-8192'
-    model = 'llama3-70b-8192'
+    # model = 'llama3-70b-8192'
+    # model = 'deepseek-r1-distill-llama-70b'
+    model = 'qwen-2.5-32b'
+
     
     # conversational_memory_length = st.sidebar.slider('Conversational memory length:', 1, 10, value=5)
     conversational_memory_length = 10

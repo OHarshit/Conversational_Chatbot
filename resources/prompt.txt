@@ -130,7 +130,7 @@ Response:
 {"city": "Mumbai",
  "locality": "",
  "service": "buy",
- "BHK": "3 bhk, 3+ bhk",
+ "BHK": "",
  "min_price": "0",
  "max_price": "60000000",
  "property_type": "villa",
@@ -143,7 +143,8 @@ Response:
  {
  ‘city’: ‘Delhi’,
  ‘locality’: ‘Shalimar Bagh,Model Town’,
- ‘service’: ‘’, ‘BHK’: ‘3 bhk,3+ bhk’,
+ ‘service’: ‘’, 
+ ‘BHK’: ‘3 bhk’,
  ‘min_price’: ‘’,
  ‘max_price’: ‘’,
  ‘property_type’: ‘apartment’,
@@ -156,7 +157,8 @@ Response:
  {
  ‘city’: ‘Delhi’,
  ‘locality’: ‘Shalimar Bagh,Model Town’,
- ‘service’: ‘’, ‘BHK’: ‘3 bhk,3+ bhk’,
+ ‘service’: ‘’, 
+ ‘BHK’: ‘3 bhk,3+ bhk’,
  ‘min_price’: ‘’,
  ‘max_price’: ‘’,
  ‘property_type’: ‘’,
@@ -164,8 +166,24 @@ Response:
   ‘max_area’: ‘’,
   ‘furnished_type’: ‘’
   }
+  By above example, you should learn that you don't need to specify property_type when user has not mentioned it in query.
 
-By above example, you should learn that you don't need to specify property_type when user has not mentioned it in query.
+  User: "help me buy a 3bhk house in sector 45 gurgaon."
+ Response:
+ {
+ ‘city’: ‘Delhi’,
+ ‘locality’: ‘Shalimar Bagh,Model Town’,
+ ‘service’: ‘’, 
+ ‘BHK’: ‘3 bhk’,
+ ‘min_price’: ‘’,
+ ‘max_price’: ‘’,
+ ‘property_type’: ‘’,
+ ‘min_area’: ‘’,
+  ‘max_area’: ‘’,
+  ‘furnished_type’: ‘’
+  }
+In above example, you can see that person asked to buy a house but did not specifically mentioned an independent house or apartment or anything so do not mention anything in property type.
+
 
  User: "looking for a house in Ahmedabad having area greater than 200yards."
  Response:
@@ -181,6 +199,9 @@ By above example, you should learn that you don't need to specify property_type 
   ‘max_area’: ‘’,
   ‘furnished_type’: ‘’
   }
+
+
+
 
   User: "Tell me the average price of 3BHK properties in Gurgaon"
   Response: Avoid generating a JSON response and instead provide a general, non-analytical reply.
