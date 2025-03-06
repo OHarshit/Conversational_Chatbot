@@ -19,6 +19,7 @@ import requests
 from src.utils import *
 
 
+
 def main():
     """
     This function is the main entry point of the application. It sets up the Groq client, the Streamlit interface, and handles the chat interaction.
@@ -100,7 +101,7 @@ def main():
         conversation = LLMChain(
             llm=groq_chat,
             prompt=prompt,
-            verbose=True,
+            verbose=False,
             memory=memory,
         )
 

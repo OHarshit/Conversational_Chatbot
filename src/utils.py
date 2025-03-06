@@ -294,7 +294,7 @@ def summarize_content_brief2(output_string, user_question,memory,groq_api_key):
     conversation = LLMChain(
         llm=groq_chat,
         prompt=prompt_template,
-        verbose=True,
+        verbose=False,
         memory=memory,
     )
     # response = conversation.predict(output_string=output_string, user_question=user_question)
@@ -317,7 +317,7 @@ def summarize_content2(output_string, user_question,memory,groq_api_key):
     conversation = LLMChain(
         llm=groq_chat,
         prompt=prompt_template,
-        verbose=True,
+        verbose=False,
         memory=memory,
     )
     # response = conversation.predict(output_string=output_string, user_question=user_question)
