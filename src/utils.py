@@ -12,6 +12,9 @@ from langchain_core.prompts import (
 from langchain_core.messages import SystemMessage
 from langchain.chains.conversation.memory import ConversationBufferWindowMemory, ConversationBufferMemory
 from langchain_groq import ChatGroq
+import requests
+from bs4 import BeautifulSoup
+
 def find_best_match(candidate: str, string_dict: dict):
     """
     Finds the best matching key from the dictionary for the given candidate string.
@@ -205,12 +208,18 @@ def summarize_links(output_string, user_question,memory,prompt,groq_api_key):
             #Your response should have all the links provided, reasons against each link & asking the user additional information to improve this response.Response should not be more than 15 lines
             #Please write the reasons against each link under appropriate headers making it readable for the user.'''
 
-            f'''Review the links provided in {output_string} as a response to the user query {user_question}. For each suggested property, explain why it is a good match for the query, highlighting non-obvious and unique reasons specific to each listing. Additionally, suggest further parameters that we should ask the user to refine their search. Maintain a conversational and engaging tone.
-            Your response should include:
-            Top 5 property links
-            Reasons for each property, categorized under relevant headers (e.g., Size, Furnishing, Rent,Furnishing,Security Deposit,Floor,Bathrooms,Balconies,Parking,Availability,Property Age,Facing,Project Highlights: etc.)
-            A short section suggesting additional details to improve future recommendations
-            The response should be concise (within 15 lines), easy to read, and user-friendly. Please don't mention user's query in your response. Talk like you are directly responding to {user_question}.Maintain a conversational tone including some suitable emojis'''
+            # f'''Fetch information from the links provided in {output_string} as a response to the user query {user_question}. For each suggested property, explain why it is a good match for the query, highlighting non-obvious and unique reasons specific to each listing. Additionally, suggest further parameters that we should ask the user to refine their search. Maintain a conversational and engaging tone.
+            # Your response should include:
+            # Top 5 property links
+            # Reasons for each property, categorized under relevant headers (e.g., Size, Furnishing, Rent,Furnishing,Security Deposit,Floor,Bathrooms,Balconies,Parking,Availability,Property Age,Facing,Project Highlights: etc.)
+            # A short section suggesting additional details to improve future recommendations
+            # The response should be concise (within 15 lines), easy to read, and user-friendly. Please don't mention user's query in your response. Talk like you are directly responding to {user_question}.Maintain a conversational tone including some suitable emojis.
+            # Strictly stick to only the information fetched from the links and don't provide any misinformation.'''
+
+            f'''Summarize the information provided against each of the links'''
+
+
+
         )
     )
     conversation = LLMChain(
@@ -223,4 +232,130 @@ def summarize_links(output_string, user_question,memory,prompt,groq_api_key):
     response = conversation.predict(human_input=output_string)
 
     return response
+
+def summarize_content(output_string, user_question,memory,groq_api_key):
+    model = 'llama3-70b-8192'
+    groq_chat = ChatGroq(groq_api_key=groq_api_key, model=model)
+    prompt_template = PromptTemplate(
+        input_variables=["output_string", "user_question"],
+        template=(
+            f'''Summarize the information against the links provided in {output_string} as a response to the user query {user_question}. For each suggested property, explain why it is a good match for the query, highlighting non-obvious and unique reasons specific to each listing. Additionally, suggest further parameters that we should ask the user to refine their search. Maintain a conversational and engaging tone.
+             Your response should include:
+             Reasons for each property, categorized under relevant headers (e.g., Size, Furnishing, Rent,Furnishing,Security Deposit,Floor,Bathrooms,Balconies,Parking,Availability,Property Age,Facing,Project Highlights: etc.)
+             A short section suggesting additional details to improve future recommendations
+             The response should be brief and to the point(in bullets), easy to read, and user-friendly. Please don't mention user's query in your response. Talk like you are directly responding to {user_question}.Maintain a conversational tone including some suitable emojis.
+             Strictly stick to only the information provided against the links and don't provide any misinformation'''
+        )
+    )
+    conversation = LLMChain(
+        llm=groq_chat,
+        prompt=prompt_template,
+        verbose=True,
+        memory=memory,
+    )
+    # response = conversation.predict(output_string=output_string, user_question=user_question)
+    response = conversation.predict(human_input=output_string)
+
+    return response
+
+def summarize_content_brief(output_string, user_question,memory,groq_api_key):
+    model = 'llama3-70b-8192'
+    groq_chat = ChatGroq(groq_api_key=groq_api_key, model=model)
+    prompt_template = PromptTemplate(
+        input_variables=["output_string", "user_question"],
+        template=(
+            f'''Summarize the information against the links provided in {output_string} as a response to the user query {user_question}. For each suggested property, explain why it is a good match for the query, highlighting non-obvious and unique reasons specific to each listing. Maintain a conversational and engaging tone.
+             Your response should include:
+             Reasons for each property, categorized under relevant headers (e.g., Size, Furnishing, Rent,Furnishing,Security Deposit,Floor,Bathrooms,Balconies,Parking,Availability,Property Age,Facing,Project Highlights: etc.)
+             The response should be brief and to the point(in bullets), easy to read, and user-friendly. Please don't mention user's query in your response. Talk like you are directly responding to {user_question}.Maintain a conversational tone including some suitable emojis.
+             Strictly stick to only the information provided against the links and don't provide any misinformation. Please limit ur response to 20 words and remember this is not the end of the chat'''
+        )
+    )
+    conversation = LLMChain(
+        llm=groq_chat,
+        prompt=prompt_template,
+        verbose=True,
+        memory=memory,
+    )
+    # response = conversation.predict(output_string=output_string, user_question=user_question)
+    response = conversation.predict(human_input=output_string)
+
+    return response
+
+def summarize_content_brief2(output_string, user_question,memory,groq_api_key):
+    model = 'llama3-70b-8192'
+    groq_chat = ChatGroq(groq_api_key=groq_api_key, model=model)
+    prompt_template = PromptTemplate(
+        input_variables=["output_string", "user_question"],
+        template=(
+            f'''Summarize the information against the links provided in {output_string} as a response to the user query {user_question} in just 20 words'''
+        )
+    )
+    conversation = LLMChain(
+        llm=groq_chat,
+        prompt=prompt_template,
+        verbose=True,
+        memory=memory,
+    )
+    # response = conversation.predict(output_string=output_string, user_question=user_question)
+    response = conversation.predict(human_input=output_string)
+
+    return response
+
+def summarize_content2(output_string, user_question,memory,groq_api_key):
+    model = 'llama3-70b-8192'
+    groq_chat = ChatGroq(groq_api_key=groq_api_key, model=model)
+    prompt_template = PromptTemplate(
+        input_variables=["output_string", "user_question"],
+        template=(
+            f'''Summarize the information against the links provided in {output_string} under 20 words or so for each link.
+             Every link and it's summary should have their own separate bullet points.
+             Strictly stick to only the information provided against the links and don't provide any misinformation.
+            Keep the links as it is before the description and do not mention that u are providing any summary. Maintain a conversational and engaging tone.'''
+        )
+    )
+    conversation = LLMChain(
+        llm=groq_chat,
+        prompt=prompt_template,
+        verbose=True,
+        memory=memory,
+    )
+    # response = conversation.predict(output_string=output_string, user_question=user_question)
+    response = conversation.predict(human_input=output_string)
+
+    return response
+
+def get_scraped_content(url):
+    # Headers to mimic a real browser request
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"
+    }
+
+    # Fetch the webpage
+    response = requests.get(url, headers=headers,verify=False)
+
+    # Check if the request was successful
+    if response.status_code == 200:
+        # Parse HTML content
+        #soup = BeautifulSoup(response.text, "html.parser")
+        soup = BeautifulSoup(response.text, "lxml")
+        # Find the "About this property" section by text
+        about_header = soup.find("div", text="About this property")
+
+        if about_header:
+            # The actual content is likely in the next div or sibling
+            about_section = about_header.find_next_sibling("div")
+            if about_section:
+                print("About this Property:")
+                content = about_section.get_text(strip=True)
+                print(content)
+                return content
+            else:
+                print("Could not find the property details after the header.")
+        else:
+            print("Could not find the 'About this Property' section. The page may use JavaScript to load content.")
+
+    else:
+        print(f"Failed to fetch page. Status code: {response.status_code}")
+
 

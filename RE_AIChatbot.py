@@ -148,16 +148,27 @@ def main():
             Output_string = ''
             print(len(public_urls))
             flag_for_url=0
+            count=0
+            public_urls=public_urls[0:5]
             for url in public_urls:
-                Output_string = Output_string + url
+
+                Output_string = Output_string + url + " "
+                Output_string = Output_string + '\n'
+                if count==(len(public_urls)-1):
+                    #Output_string = Output_string + summarize_content(get_scraped_content(url),user_question,memory,groq_api_key)
+                    Output_string = Output_string + get_scraped_content(url)
+                else:
+                    #Output_string = Output_string + summarize_content_brief2(get_scraped_content(url), user_question, memory,groq_api_key)
+                    Output_string = Output_string + get_scraped_content(url)
                 Output_string = Output_string + '\n'
                 flag_for_url = 1
+                count=count+1
             response = Output_string
             print(flag_for_url)
             if flag_for_url==1:
                 with open("resources/prompt_for_summarizing_properties.txt", "r", encoding="utf-8") as file:
                     prompt_for_summary = file.read()
-                response=summarize_links(Output_string, user_question,memory,prompt_for_summary,groq_api_key)
+                response=summarize_content2(Output_string, user_question,memory,groq_api_key)
             elif Output_string == '':
                 response = "Oops, seems our property search is playing hide and seek! Maybe loosen those filters a bit or double-check them for any cheeky mix-ups."
             #elif int(flag_for_url)==1:
