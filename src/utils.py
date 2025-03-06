@@ -2,6 +2,16 @@ from rapidfuzz import process
 import pandas as pd
 import re
 import json
+from langchain.chains import ConversationChain, LLMChain
+from langchain.prompts import PromptTemplate
+from langchain_core.prompts import (
+    ChatPromptTemplate,
+    HumanMessagePromptTemplate,
+    MessagesPlaceholder,
+)
+from langchain_core.messages import SystemMessage
+from langchain.chains.conversation.memory import ConversationBufferWindowMemory, ConversationBufferMemory
+from langchain_groq import ChatGroq
 def find_best_match(candidate: str, string_dict: dict):
     """
     Finds the best matching key from the dictionary for the given candidate string.
@@ -180,3 +190,37 @@ def get_JSON(text):
             return text
 
     return text
+
+def summarize_links(output_string, user_question,memory,prompt,groq_api_key):
+    #model = 'qwen-2.5-32b'
+    model = 'llama3-70b-8192'
+    groq_chat = ChatGroq(groq_api_key=groq_api_key, model=model)
+    prompt_template = PromptTemplate(
+        input_variables=["output_string", "user_question"],
+        template=(
+            #f"{prompt}\n\n"
+            #f"U have to read the links provided in {output_string} and provide a concise summary of all properties"
+            #f'''Check the links given as answer in {output_string} to the user query {user_question} and add reasons why each of the suggested property is correct as per the query.Provide reasons which are non-obvious and unique to each suggestion.Also add what additional parameters that we should ask the user to further refine his search for the parameters.Put this in normal conversational tone.
+
+            #Your response should have all the links provided, reasons against each link & asking the user additional information to improve this response.Response should not be more than 15 lines
+            #Please write the reasons against each link under appropriate headers making it readable for the user.'''
+
+            f'''Review the links provided in {output_string} as a response to the user query {user_question}. For each suggested property, explain why it is a good match for the query, highlighting non-obvious and unique reasons specific to each listing. Additionally, suggest further parameters that we should ask the user to refine their search. Maintain a conversational and engaging tone.
+            Your response should include:
+            Top 5 property links
+            Reasons for each property, categorized under relevant headers (e.g., Size, Furnishing, Rent,Furnishing,Security Deposit,Floor,Bathrooms,Balconies,Parking,Availability,Property Age,Facing,Project Highlights: etc.)
+            A short section suggesting additional details to improve future recommendations
+            The response should be concise (within 15 lines), easy to read, and user-friendly. Please don't mention user's query in your response. Talk like you are directly responding to {user_question}.Maintain a conversational tone including some suitable emojis'''
+        )
+    )
+    conversation = LLMChain(
+        llm=groq_chat,
+        prompt=prompt_template,
+        verbose=True,
+        memory=memory,
+    )
+    #response = conversation.predict(output_string=output_string, user_question=user_question)
+    response = conversation.predict(human_input=output_string)
+
+    return response
+

@@ -52,9 +52,9 @@ def main():
     # )
 
     # model = 'llama3-8b-8192'
-    # model = 'llama3-70b-8192'
+    model = 'llama3-70b-8192'
     # model = 'deepseek-r1-distill-llama-70b'
-    model = 'qwen-2.5-32b'
+    #model = 'qwen-2.5-32b'
 
     
     # conversational_memory_length = st.sidebar.slider('Conversational memory length:', 1, 10, value=5)
@@ -147,14 +147,22 @@ def main():
 
             Output_string = ''
             print(len(public_urls))
+            flag_for_url=0
             for url in public_urls:
                 Output_string = Output_string + url
                 Output_string = Output_string + '\n'
+                flag_for_url = 1
             response = Output_string
-
-            if Output_string == '':
+            print(flag_for_url)
+            if flag_for_url==1:
+                with open("resources/prompt_for_summarizing_properties.txt", "r", encoding="utf-8") as file:
+                    prompt_for_summary = file.read()
+                response=summarize_links(Output_string, user_question,memory,prompt_for_summary,groq_api_key)
+            elif Output_string == '':
                 response = "Oops, seems our property search is playing hide and seek! Maybe loosen those filters a bit or double-check them for any cheeky mix-ups."
+            #elif int(flag_for_url)==1:
 
+            print(flag_for_url)
         except Exception as e:
             print(e)
 
