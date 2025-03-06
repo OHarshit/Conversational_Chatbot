@@ -348,7 +348,7 @@ def get_scraped_content(url):
             if about_section:
                 print("About this Property:")
                 content = about_section.get_text(strip=True)
-                print(content)
+                # print(content)
                 return content
             else:
                 print("Could not find the property details after the header.")
