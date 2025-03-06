@@ -118,7 +118,7 @@ def main():
 
         apartment_type_mapping = {'office':54,'residential':54,'1 bhk':2,'2 bhk':3,'3 bhk':4,
                                     'shop':54,'residential plot':54,'3+ bhk':5,'showroom':54,'agricultural land':70,'1 rk':1,
-                                    '4 bhk':4,'5 bhk':4,'6 bhk':4,'7 bhk':4,'8 bhk':4}
+                                    '4 bhk':5,'5 bhk':5,'6 bhk':5,'7 bhk':5,'8 bhk':5}
 
         furnish_type_mapping = {'semi-furnished':2,'unfurnished':3,'fully furnished':1}
 
