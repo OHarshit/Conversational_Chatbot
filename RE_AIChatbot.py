@@ -199,11 +199,22 @@ def main():
                 khoj_rent_base_url = khoj_rent_base_url + "&flat_ids=" + all_flats_khoj_str
                 description_json_str = requests.get(khoj_rent_base_url,verify=False)
             # print(khoj_buy_base_url,khoj_rent_base_url)
-            
+
             description_json_json = description_json_str.json()
 
             description_json_list = description_json_json['data']['hits']
-            
+
+            #description_json_dict = {value['id']:value['description'] for idx,value in enumerate(description_json_list)  }
+            description_json_dict={}
+            for idx,value in enumerate(description_json_list):
+                if value['description'] is None:
+                    description_json_dict[str(value['id'])] =''
+                else:
+                    description_json_dict[str(value['id'])] = truncate_scraped_content(value['description'])
+
+
+
+            print(description_json_dict)
 
             Output_string = ''
             # print(len(public_urls))
@@ -211,10 +222,11 @@ def main():
             count=0
             public_urls=public_urls[0:5]
             for i,url in enumerate(public_urls):
-
+                flat_id = url.split('/')[-1].split('-')[0]
+                print(flat_id)
                 Output_string = Output_string + url + " "
                 Output_string = Output_string + '\n'
-                Output_string = Output_string + " " + description_json_list[i]['description']
+                Output_string = Output_string + " " + description_json_dict.get(flat_id)#description_json_list[i]['description']
                 Output_string = Output_string + ''
                 # if count==(len(public_urls)-1):
                 #     #Output_string = Output_string + summarize_content(get_scraped_content(url),user_question,memory,groq_api_key)
