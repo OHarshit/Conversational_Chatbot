@@ -178,9 +178,9 @@ def main():
             url_buy_base = 'https://housing.com/in/buy/resale/page/'
             for i,val in enumerate(all_flats):
                 if val['service_type'] == 'resale':
-                    public_urls.append(url_buy_base+str(val['flat_id'])+'-')
+                    public_urls.append(url_buy_base+str(val['flat_id'])+'-'+'property')
                 else:
-                    public_urls.append(url_rent_base+str(val['flat_id'])+'-')
+                    public_urls.append(url_rent_base+str(val['flat_id'])+'-'+'property')
 
             Output_string = ''
             print(len(public_urls))
