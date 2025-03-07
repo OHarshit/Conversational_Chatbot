@@ -151,6 +151,9 @@ def main():
         property_type_mapping = {'shop':39,'independent house':2,'villa':38,'plot':37,'independent floor':35,'apartment':1,'office':40}
 
         base_url = 'https://recommendation.housing.com/recommended-properties/?query_unique_id=1&page_size=10&uid=123458765544'
+        khoj_buy_base_url = "https://khoj.housing.com/api/v9/buy/index/filter?buy_listing30=true"
+        khoj_rent_base_url = "https://khoj.housing.com/api/v2/rent/index/filter?rent_listing30=true"
+        
         # &service=buy&type=resale&
         # &city_name=mumbai&poly=e132fcd7870f8379a5e1
         try:
@@ -176,27 +179,49 @@ def main():
             public_urls = []
             url_rent_base = 'https://housing.com/rent/'
             url_buy_base = 'https://housing.com/in/buy/resale/page/'
+            all_flats_khoj = []
+            is_buy = False
             for i,val in enumerate(all_flats):
+                print(val)
                 if val['service_type'] == 'resale':
+                    is_buy = True
                     public_urls.append(url_buy_base+str(val['flat_id'])+'-'+'property')
                 else:
                     public_urls.append(url_rent_base+str(val['flat_id'])+'-'+'property')
+                all_flats_khoj.append(str(val['flat_id']))
+            all_flats_khoj_str=','.join(all_flats_khoj)
+            # print(all_flats_khoj_str)
+            description_json_str = ''
+            if is_buy:
+                khoj_buy_base_url = khoj_buy_base_url + "&flat_ids=" + all_flats_khoj_str
+                description_json_str = requests.get(khoj_buy_base_url,verify=False)
+            else:
+                khoj_rent_base_url = khoj_rent_base_url + "&flat_ids=" + all_flats_khoj_str
+                description_json_str = requests.get(khoj_rent_base_url,verify=False)
+            # print(khoj_buy_base_url,khoj_rent_base_url)
+            
+            description_json_json = description_json_str.json()
+
+            description_json_list = description_json_json['data']['hits']
+            
 
             Output_string = ''
-            print(len(public_urls))
+            # print(len(public_urls))
             flag_for_url=0
             count=0
             public_urls=public_urls[0:5]
-            for url in public_urls:
+            for i,url in enumerate(public_urls):
 
                 Output_string = Output_string + url + " "
                 Output_string = Output_string + '\n'
-                if count==(len(public_urls)-1):
-                    #Output_string = Output_string + summarize_content(get_scraped_content(url),user_question,memory,groq_api_key)
-                    Output_string = Output_string + truncate_scraped_content(get_scraped_content(url))
-                else:
-                    #Output_string = Output_string + summarize_content_brief2(get_scraped_content(url), user_question, memory,groq_api_key)
-                    Output_string = Output_string + truncate_scraped_content(get_scraped_content(url))
+                Output_string = Output_string + " " + description_json_list[i]['description']
+                Output_string = Output_string + ''
+                # if count==(len(public_urls)-1):
+                #     #Output_string = Output_string + summarize_content(get_scraped_content(url),user_question,memory,groq_api_key)
+                #     Output_string = Output_string + truncate_scraped_content(get_scraped_content(url))
+                # else:
+                #     #Output_string = Output_string + summarize_content_brief2(get_scraped_content(url), user_question, memory,groq_api_key)
+                #     Output_string = Output_string + truncate_scraped_content(get_scraped_content(url))
                 Output_string = Output_string + '\n'
                 flag_for_url = 1
                 count=count+1
