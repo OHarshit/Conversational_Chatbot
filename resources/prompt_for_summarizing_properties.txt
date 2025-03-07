@@ -1,45 +1,42 @@
-Query:
-Check the links given as answer to the user query and add reasons why each of the suggested property is correct as per the query. Provide reasons which are non-obvious and unique to each suggestion. Also add what additional parameters that we should ask the user to further refine his search for the parameters. Put this in normal conversational tone.
+Query : < <Link1, Description of the link1>,
+<Link2, Description of the link2>,
+<Link3, Description of the link3>,
+<Link4, Description of the link4>,
+<Link5, Description of the link5> >
 
-Your response should have all the links provided, reasons against each link & asking the user additional information to improve this response. Response should not be more than 15 lines.
-
-The user entered a below query
-"I am looking to rent at least a 3bhk in Noida Sector 144, Sector 150 or Sector 75. It should be either semi or fully furnished property. Preferbaly an aprtment. The flat should not be less than 1000 sqft. Budget is 35k max."
-
-The below links are the properties suggested based on the above user query.
-"
-https://housing.com/rent/16400771-2300-sqft-3.5-bhk-apartment-on-rent-in-sector-150-noida https://housing.com/rent/16471897-1575-sqft-3-bhk-apartment-on-rent-in-sector-150-noida
-https://housing.com/rent/16337077-1675-sqft-3-bhk-apartment-on-rent-in-sector-150-noida
-"
 Response:
-"Here are the properties that match your rental query, along with some unique reasons why they could be great choices for you. I've also added some additional details that might help refine your search further.
-
-Suggested Properties & Unique Benefits:
-1️⃣ 3.5 BHK, 2300 Sqft, Sector 150, Noida
-
-Why it's great? This property gives you extra space with a 3.5 BHK layout, making it ideal if you need a study room or guest room. Also, at 2300 sqft, it's much larger than your minimum requirement.
-What to check? Since it's over your requirement in size, confirm if it's still within budget or if there's any negotiation room.
-2️⃣ 3 BHK, 1575 Sqft, Sector 150, Noida
-
-Why it's great? This one balances affordability and space—larger than 1000 sqft but still within your 35k budget. Sector 150 is known for its greenery and open spaces, making it great for families.
-What to check? Since furnishing is important to you, confirm if it meets your semi-furnished or fully furnished requirement.
-3️⃣ 3 BHK, 1675 Sqft, Sector 150, Noida
-
-Why it's great? The extra space compared to a standard 3 BHK gives you more flexibility for storage or a home office. Sector 150 also has better sports & recreational facilities compared to other Noida sectors.
-What to check? Look into the society's maintenance charges and confirm the furnishing status to match your preference.
-Additional Information to Refine Your Search:
-Would you prefer newer apartments, or are you open to older, well-maintained ones?
-Is having a balcony, modular kitchen, or covered parking important?
-Do you need a pet-friendly or child-friendly society?
-Would you like to be near metro stations or commercial hubs for convenience?
-Let me know, and I can refine these options further! 😊"
+'''
+Here are some of the matches tailored to your preferences:
+- [Link1] : Brief Summary of Link1,
+- [Link2] : Brief Summary of Link2
+- [Link3] : Brief Summary of Link3
+- [Link4] : Brief Summary of Link4
+- [Link5] : Brief Summary of Link5
 
 
-'''Review the links provided in {output_string} as a response to the user query {user_question}. For each suggested property, explain why it is a good match for the query, highlighting non-obvious and unique reasons specific to each listing. Additionally, suggest further parameters that we should ask the user to refine their search. Maintain a conversational and engaging tone.
+Would you like me to refine these recommendations based on your specific preferences or requirements?
+'''
 
-Your response should include:
+Query : < <Link1, Description of the link1>,
+<Link2, Description of the link2>,
+<Link3, Description of the link3>,
+<Link4, Description of the link4>,
+<Link5, Description of the link5> >
 
-All the property links
-Reasons for each property, categorized under relevant headers (e.g., Size, Furnishing, Rent, etc.)
-A short section suggesting additional details to improve future recommendations
-The response should be concise (within 15 lines), easy to read, and user-friendly.'''
+Response:
+'''
+Have a look at what I have found for you:
+- [Link1] : Brief Summary of Link1,
+- [Link2] : Brief Summary of Link2
+- [Link3] : Brief Summary of Link3
+- [Link4] : Brief Summary of Link4
+- [Link5] : Brief Summary of Link5
+
+
+Can you specify more details about your preferences? This will help me give you better responses.
+'''
+The response against each link should be brief and to the point(in bullets) in separate lines, easy to read, and user-friendly.
+At the end, include a brief section (within 20 words) asking for additional details to refine future recommendations.
+Only use the information available for each link—avoid assumptions or misinformation.
+Maintain a natural, conversational tone without explicitly stating that you are summarizing or requesting more details.
+Do not use the phrase -"here are the summaries"; simply present the links with their respective descriptions in a seamless, user-friendly manner.
