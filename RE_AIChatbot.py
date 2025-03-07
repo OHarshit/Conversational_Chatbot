@@ -156,88 +156,100 @@ def main():
         
         # &service=buy&type=resale&
         # &city_name=mumbai&poly=e132fcd7870f8379a5e1
-        try:
-            response = get_JSON(response)
-            json_query = json.loads(response)
-            url,flag = construct_url(json_query,city_mapping,locality_mapping,furnish_type_mapping,apartment_type_mapping,property_type_mapping,base_url)
-            #response = url
+        #try:
+        response = get_JSON(response)
+        json_query = json.loads(response)
+        url,flag = construct_url(json_query,city_mapping,locality_mapping,furnish_type_mapping,apartment_type_mapping,property_type_mapping,base_url)
+        #response = url
 
-            if flag==0:
-                response = "Got a city in mind? Drop it here, and I'll track down your dream home!"
-                raise Exception(response)
-            elif flag==1:
-                response = "Oops! Looks like your city’s playing hide and seek. Try dropping another city name, and I’ll fetch the best spots!"
+        if flag==0:
+            response = "Got a city in mind? Drop it here, and I'll track down your dream home!"
+            raise Exception(response)
+        elif flag==1:
+            response = "Oops! Looks like your city’s playing hide and seek. Try dropping another city name, and I’ll fetch the best spots!"
 
-                raise Exception(response)
+            raise Exception(response)
 
-            response = requests.get(url,verify=False)
+        response = requests.get(url,verify=False)
 
-            # Send a GET request
-            print(response.text)  # Print the response content
-            data = response.json()
-            all_flats = data['data']['flat_id_personal_score_pair']
-            public_urls = []
-            url_rent_base = 'https://housing.com/rent/'
-            url_buy_base = 'https://housing.com/in/buy/resale/page/'
-            all_flats_khoj = []
-            is_buy = False
-            for i,val in enumerate(all_flats):
-                print(val)
-                if val['service_type'] == 'resale':
-                    is_buy = True
-                    public_urls.append(url_buy_base+str(val['flat_id'])+'-'+'property')
-                else:
-                    public_urls.append(url_rent_base+str(val['flat_id'])+'-'+'property')
-                all_flats_khoj.append(str(val['flat_id']))
-            all_flats_khoj_str=','.join(all_flats_khoj)
-            # print(all_flats_khoj_str)
-            description_json_str = ''
-            if is_buy:
-                khoj_buy_base_url = khoj_buy_base_url + "&flat_ids=" + all_flats_khoj_str
-                description_json_str = requests.get(khoj_buy_base_url,verify=False)
+        # Send a GET request
+        print(response.text)  # Print the response content
+        data = response.json()
+        all_flats = data['data']['flat_id_personal_score_pair']
+        public_urls = []
+        url_rent_base = 'https://housing.com/rent/'
+        url_buy_base = 'https://housing.com/in/buy/resale/page/'
+        all_flats_khoj = []
+        is_buy = False
+        for i,val in enumerate(all_flats):
+            print(val)
+            if val['service_type'] == 'resale':
+                is_buy = True
+                public_urls.append(url_buy_base+str(val['flat_id'])+'-'+'property')
             else:
-                khoj_rent_base_url = khoj_rent_base_url + "&flat_ids=" + all_flats_khoj_str
-                description_json_str = requests.get(khoj_rent_base_url,verify=False)
-            # print(khoj_buy_base_url,khoj_rent_base_url)
-            
-            description_json_json = description_json_str.json()
+                public_urls.append(url_rent_base+str(val['flat_id'])+'-'+'property')
+            all_flats_khoj.append(str(val['flat_id']))
+        all_flats_khoj_str=','.join(all_flats_khoj)
+        # print(all_flats_khoj_str)
+        description_json_str = ''
+        if is_buy:
+            khoj_buy_base_url = khoj_buy_base_url + "&flat_ids=" + all_flats_khoj_str
+            description_json_str = requests.get(khoj_buy_base_url,verify=False)
+        else:
+            khoj_rent_base_url = khoj_rent_base_url + "&flat_ids=" + all_flats_khoj_str
+            description_json_str = requests.get(khoj_rent_base_url,verify=False)
+        # print(khoj_buy_base_url,khoj_rent_base_url)
 
-            description_json_list = description_json_json['data']['hits']
-            
+        description_json_json = description_json_str.json()
 
-            Output_string = ''
-            # print(len(public_urls))
-            flag_for_url=0
-            count=0
-            public_urls=public_urls[0:5]
-            for i,url in enumerate(public_urls):
+        description_json_list = description_json_json['data']['hits']
 
-                Output_string = Output_string + url + " "
-                Output_string = Output_string + '\n'
-                Output_string = Output_string + " " + description_json_list[i]['description']
-                Output_string = Output_string + ''
-                # if count==(len(public_urls)-1):
-                #     #Output_string = Output_string + summarize_content(get_scraped_content(url),user_question,memory,groq_api_key)
-                #     Output_string = Output_string + truncate_scraped_content(get_scraped_content(url))
-                # else:
-                #     #Output_string = Output_string + summarize_content_brief2(get_scraped_content(url), user_question, memory,groq_api_key)
-                #     Output_string = Output_string + truncate_scraped_content(get_scraped_content(url))
-                Output_string = Output_string + '\n'
-                flag_for_url = 1
-                count=count+1
-            response = Output_string
-            print(flag_for_url)
-            if flag_for_url==1:
-                with open("resources/prompt_for_summarizing_properties.txt", "r", encoding="utf-8") as file:
-                    prompt_for_summary = file.read()
-                response=summarize_content2(Output_string, user_question,prompt_for_summary,memory,groq_api_key,groq_api_key1,groq_api_key2)
-            elif Output_string == '':
-                response = "Oops, seems our property search is playing hide and seek! Maybe loosen those filters a bit or double-check them for any cheeky mix-ups."
-            #elif int(flag_for_url)==1:
+        #description_json_dict = {value['id']:value['description'] for idx,value in enumerate(description_json_list)  }
+        description_json_dict={}
+        for idx,value in enumerate(description_json_list):
+            if value['description'] is None:
+                description_json_dict[str(value['id'])] =''
+            else:
+                description_json_dict[str(value['id'])] = truncate_scraped_content(value['description'])
 
-            print(flag_for_url)
-        except Exception as e:
-            print(e)
+
+
+        print(description_json_dict)
+
+        Output_string = ''
+        # print(len(public_urls))
+        flag_for_url=0
+        count=0
+        public_urls=public_urls[0:5]
+        for i,url in enumerate(public_urls):
+            flat_id = url.split('/')[-1].split('-')[0]
+            print(flat_id)
+            Output_string = Output_string + url + " "
+            Output_string = Output_string + '\n'
+            Output_string = Output_string + " " + description_json_dict.get(flat_id)#description_json_list[i]['description']
+            Output_string = Output_string + ''
+            # if count==(len(public_urls)-1):
+            #     #Output_string = Output_string + summarize_content(get_scraped_content(url),user_question,memory,groq_api_key)
+            #     Output_string = Output_string + truncate_scraped_content(get_scraped_content(url))
+            # else:
+            #     #Output_string = Output_string + summarize_content_brief2(get_scraped_content(url), user_question, memory,groq_api_key)
+            #     Output_string = Output_string + truncate_scraped_content(get_scraped_content(url))
+            Output_string = Output_string + '\n'
+            flag_for_url = 1
+            count=count+1
+        response = Output_string
+        print(flag_for_url)
+        if flag_for_url==1:
+            with open("resources/prompt_for_summarizing_properties.txt", "r", encoding="utf-8") as file:
+                prompt_for_summary = file.read()
+            response=summarize_content2(Output_string, user_question,prompt_for_summary,memory,groq_api_key,groq_api_key1,groq_api_key2)
+        elif Output_string == '':
+            response = "Oops, seems our property search is playing hide and seek! Maybe loosen those filters a bit or double-check them for any cheeky mix-ups."
+        #elif int(flag_for_url)==1:
+
+        print(flag_for_url)
+        #except Exception as e:
+        #    print(e)
 
         # Save context in memory
         memory.save_context({"input": user_question}, {"output": response})
