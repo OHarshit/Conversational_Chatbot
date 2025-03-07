@@ -223,18 +223,23 @@ def main():
             public_urls=public_urls[0:5]
             for i,url in enumerate(public_urls):
                 flat_id = url.split('/')[-1].split('-')[0]
+                if flat_id in description_json_dict.keys():
+                    Output_string = Output_string + url + " "
+                    Output_string = Output_string + '\n'
+
+                    Output_string = Output_string + " " + description_json_dict.get(
+                        flat_id)  # description_json_list[i]['description']
+                    Output_string = Output_string + ''
+                    # if count==(len(public_urls)-1):
+                    #     #Output_string = Output_string + summarize_content(get_scraped_content(url),user_question,memory,groq_api_key)
+                    #     Output_string = Output_string + truncate_scraped_content(get_scraped_content(url))
+                    # else:
+                    #     #Output_string = Output_string + summarize_content_brief2(get_scraped_content(url), user_question, memory,groq_api_key)
+                    #     Output_string = Output_string + truncate_scraped_content(get_scraped_content(url))
+                    Output_string = Output_string + '\n'
+
                 print(flat_id)
-                Output_string = Output_string + url + " "
-                Output_string = Output_string + '\n'
-                Output_string = Output_string + " " + description_json_dict.get(flat_id)#description_json_list[i]['description']
-                Output_string = Output_string + ''
-                # if count==(len(public_urls)-1):
-                #     #Output_string = Output_string + summarize_content(get_scraped_content(url),user_question,memory,groq_api_key)
-                #     Output_string = Output_string + truncate_scraped_content(get_scraped_content(url))
-                # else:
-                #     #Output_string = Output_string + summarize_content_brief2(get_scraped_content(url), user_question, memory,groq_api_key)
-                #     Output_string = Output_string + truncate_scraped_content(get_scraped_content(url))
-                Output_string = Output_string + '\n'
+
                 flag_for_url = 1
                 count=count+1
             response = Output_string
