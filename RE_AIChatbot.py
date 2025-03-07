@@ -28,6 +28,10 @@ def main():
     # Get Groq API key
     os.environ['GROQ_API_KEY'] = "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"
     groq_api_key = os.environ['GROQ_API_KEY']
+    os.environ['GROQ_API_KEY1'] = "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"
+    groq_api_key1 = os.environ['GROQ_API_KEY1']
+    os.environ['GROQ_API_KEY2'] = "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"
+    groq_api_key2 = os.environ['GROQ_API_KEY2']
 
     # Display the Groq logo
     spacer, col = st.columns([5, 1])
@@ -88,6 +92,8 @@ def main():
 
     # Initialize Groq Langchain chat object
     groq_chat = ChatGroq(groq_api_key=groq_api_key, model=model, temperature=0.1, top_p=0.9)
+    groq_chat1 = ChatGroq(groq_api_key=groq_api_key1, model=model, temperature=0.1, top_p=0.9)
+    groq_chat2 = ChatGroq(groq_api_key=groq_api_key2, model=model, temperature=0.1, top_p=0.9)
     #while True:
     if submit_button and user_question:
         # Construct chat prompt template
@@ -98,17 +104,36 @@ def main():
         ])
 
         # Create conversation chain
-        conversation = LLMChain(
-            llm=groq_chat,
-            prompt=prompt,
-            verbose=False,
-            memory=memory,
-        )
+        try:
+            conversation = LLMChain(
+                llm=groq_chat,
+                prompt=prompt,
+                verbose=False,
+                memory=memory,
+            )
+            response = conversation.predict(human_input=user_question)
+        except Exception as e:
+            print(e)
+            try:
+                if ("RateLimitError" in str(e)) or ("Rate limit" in str(e)) or ("rate_limit_exceeded" in str(e)):
+                    conversation = LLMChain(
+                        llm=groq_chat1,
+                        prompt=prompt,
+                        verbose=False,
+                        memory=memory,
+                    )
+                    response = conversation.predict(human_input=user_question)
+            except Exception as e:
+                print(e)
+                if ("RateLimitError" in str(e)) or ("Rate limit" in str(e)) or ("rate_limit_exceeded" in str(e)):
+                    conversation = LLMChain(
+                        llm=groq_chat2,
+                        prompt=prompt,
+                        verbose=False,
+                        memory=memory,
+                    )
+                    response = conversation.predict(human_input=user_question)
 
-
-
-        # Get chatbot response
-        response = conversation.predict(human_input=user_question)
 
         city_mapping = {'ahmedabad':1, 'chennai':1, 'delhi':1, 'gurgaon':1, 'hyderabad':1, 'kolkata':1, 'noida':1, 'ghaziabad':1, 'pune':1, 'bengaluru':1, 'mumbai':1}
 
@@ -158,10 +183,10 @@ def main():
                 Output_string = Output_string + '\n'
                 if count==(len(public_urls)-1):
                     #Output_string = Output_string + summarize_content(get_scraped_content(url),user_question,memory,groq_api_key)
-                    Output_string = Output_string + get_scraped_content(url)
+                    Output_string = Output_string + truncate_scraped_content(get_scraped_content(url))
                 else:
                     #Output_string = Output_string + summarize_content_brief2(get_scraped_content(url), user_question, memory,groq_api_key)
-                    Output_string = Output_string + get_scraped_content(url)
+                    Output_string = Output_string + truncate_scraped_content(get_scraped_content(url))
                 Output_string = Output_string + '\n'
                 flag_for_url = 1
                 count=count+1
@@ -170,7 +195,7 @@ def main():
             if flag_for_url==1:
                 with open("resources/prompt_for_summarizing_properties.txt", "r", encoding="utf-8") as file:
                     prompt_for_summary = file.read()
-                response=summarize_content2(Output_string, user_question,prompt_for_summary,memory,groq_api_key)
+                response=summarize_content2(Output_string, user_question,prompt_for_summary,memory,groq_api_key,groq_api_key1,groq_api_key2)
             elif Output_string == '':
                 response = "Oops, seems our property search is playing hide and seek! Maybe loosen those filters a bit or double-check them for any cheeky mix-ups."
             #elif int(flag_for_url)==1:

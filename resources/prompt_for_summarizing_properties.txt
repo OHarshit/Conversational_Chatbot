@@ -35,6 +35,7 @@ Have a look at what I have found for you:
 
 Can you specify more details about your preferences? This will help me give you better responses.
 '''
+Keep the links as it is before the description of each link
 The response against each link should be brief and to the point(in bullets) in separate lines, easy to read, and user-friendly.
 At the end, include a brief section (within 20 words) asking for additional details to refine future recommendations.
 Only use the information available for each link—avoid assumptions or misinformation.
