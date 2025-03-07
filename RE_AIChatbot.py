@@ -156,10 +156,20 @@ def main():
         try:
             response = get_JSON(response)
             json_query = json.loads(response)
-            url = construct_url(json_query,city_mapping,locality_mapping,furnish_type_mapping,apartment_type_mapping,property_type_mapping,base_url)
-            response = url
-            
-            response = requests.get(url,verify=False)  # Send a GET request
+            url,flag = construct_url(json_query,city_mapping,locality_mapping,furnish_type_mapping,apartment_type_mapping,property_type_mapping,base_url)
+            #response = url
+
+            if flag==0:
+                response = "Got a city in mind? Drop it here, and I'll track down your dream home!"
+                raise Exception(response)
+            elif flag==1:
+                response = "Oops! Looks like your city’s playing hide and seek. Try dropping another city name, and I’ll fetch the best spots!"
+
+                raise Exception(response)
+
+            response = requests.get(url,verify=False)
+
+            # Send a GET request
             print(response.text)  # Print the response content
             data = response.json()
             all_flats = data['data']['flat_id_personal_score_pair']

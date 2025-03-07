@@ -178,7 +178,15 @@ def construct_url(json_query,city_mapping,locality_mapping,furnish_type_mapping,
 
     print('\n')
     print(base_url)
-    return base_url
+    flag_for_city = 2
+    if city=='':
+        flag_for_city=0
+    elif city_name==None or city_name=='':
+        flag_for_city =1
+
+
+
+    return base_url, flag_for_city
 
     
 def get_JSON(text):
