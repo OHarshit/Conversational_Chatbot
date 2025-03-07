@@ -87,7 +87,7 @@ def main():
     #user_question = st.text_input("Ask a question:")
 
     # Initialize Groq Langchain chat object
-    groq_chat = ChatGroq(groq_api_key=groq_api_key, model=model)
+    groq_chat = ChatGroq(groq_api_key=groq_api_key, model=model, temperature=0.1, top_p=0.9)
     #while True:
     if submit_button and user_question:
         # Construct chat prompt template
@@ -170,7 +170,7 @@ def main():
             if flag_for_url==1:
                 with open("resources/prompt_for_summarizing_properties.txt", "r", encoding="utf-8") as file:
                     prompt_for_summary = file.read()
-                response=summarize_content2(Output_string, user_question,memory,groq_api_key)
+                response=summarize_content2(Output_string, user_question,prompt_for_summary,memory,groq_api_key)
             elif Output_string == '':
                 response = "Oops, seems our property search is playing hide and seek! Maybe loosen those filters a bit or double-check them for any cheeky mix-ups."
             #elif int(flag_for_url)==1:

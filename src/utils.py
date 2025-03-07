@@ -302,17 +302,36 @@ def summarize_content_brief2(output_string, user_question,memory,groq_api_key):
 
     return response
 
-def summarize_content2(output_string, user_question,memory,groq_api_key):
+def summarize_content2(output_string, user_question,prompt_for_summary,memory,groq_api_key):
     model = 'llama3-70b-8192'
-    groq_chat = ChatGroq(groq_api_key=groq_api_key, model=model)
+    groq_chat = ChatGroq(groq_api_key=groq_api_key, model=model, temperature=0.1, top_p=0.9)
     prompt_template = PromptTemplate(
         input_variables=["output_string", "user_question"],
         template=(
-            f'''Summarize the information against the links provided in {output_string} under 20 words or so for each link.
-             Every link and it's summary should have their own separate bullet points.
-             Strictly stick to only the information provided against the links and don't provide any misinformation.
-            Keep the links as it is before the description and do not mention that u are providing any summary. Maintain a conversational and engaging tone.'''
-        )
+        #     f'''Summarize the information against the links provided in {output_string} under 20 words or so for each link.
+        #      Every link and it's summary should have their own separate bullet points.
+        #      Strictly stick to only the information provided against the links and don't provide any misinformation.
+        #     Keep the links as it is before the description and do not mention that u are providing any summary. Maintain a conversational and engaging tone.'''
+
+            # f'''Summarize the information against the links provided in {output_string} under 20 words or so for each link.
+            #     Your response should include:
+            #     Every link and it's summary with their own separate bullet points.
+            #     A short section asking the user to provide additional details and relevant questions to improve future recommendations at the end of your response, limit this section to 20 words only.
+            #     Strictly stick to only the information provided against the links and don't provide any misinformation.
+            #     You do no need to mention that you are providing some summary or additional section. Talk like you are directly responding to user query.
+            #    Keep the links as it is before the description and do not mention that u are providing any summary. Maintain a conversational and engaging tone.
+            #  You do not need to say that you are providing some summaries at the beginning of your response. Just start responding in a engaging and conversational tone.'''
+            #
+
+            f'''Format your response as follows:
+
+Each provided link should be listed first, followed by a concise, engaging, and factual summary (about 20 words per link) of the information present against each link in {output_string}.
+At the end, include a brief section (within 20 words) asking for additional details to refine future recommendations.
+Only use the information available for each link—avoid assumptions or misinformation.
+Maintain a natural, conversational tone without explicitly stating that you are summarizing or requesting more details.
+Do not use the phrase -"here are the summaries"; simply present the links with their respective descriptions in a seamless, user-friendly manner.
+Ensure the response is engaging, direct, and informative. Refer below example for your reference-''' + f'''{prompt_for_summary}'''
+         )
     )
     conversation = LLMChain(
         llm=groq_chat,
