@@ -313,9 +313,6 @@ def summarize_content_brief2(output_string, user_question,memory,groq_api_key):
 def summarize_content2(output_string, user_question,prompt_for_summary,memory,groq_api_key,groq_api_key1,groq_api_key2):
     #model = 'llama3-70b-8192'
     model = 'llama3-8b-8192'
-    groq_chat = ChatGroq(groq_api_key=groq_api_key, model=model, temperature=0.1, top_p=0.9)
-    groq_chat1 = ChatGroq(groq_api_key=groq_api_key1, model=model, temperature=0.1, top_p=0.9)
-    groq_chat2 = ChatGroq(groq_api_key=groq_api_key2, model=model, temperature=0.1, top_p=0.9)
     prompt_template = PromptTemplate(
         input_variables=["output_string", "user_question"],
         template=(
@@ -344,35 +341,7 @@ Do not use the phrase -"here are the summaries"; simply present the links with t
 Ensure the response is engaging, direct, and informative. Refer below example for your reference-''' + f'''{prompt_for_summary}'''
          )
     )
-    try:
-        conversation = LLMChain(
-            llm=groq_chat,
-            prompt=prompt_template,
-            verbose=False,
-            memory=memory,
-        )
-        response = conversation.predict(human_input=user_question)
-    except Exception as e:
-        print(e)
-        try:
-            if ("RateLimitError" in str(e)) or ("Rate limit" in str(e)) or ("rate_limit_exceeded" in str(e)):
-                conversation = LLMChain(
-                    llm=groq_chat1,
-                    prompt=prompt_template,
-                    verbose=False,
-                    memory=memory,
-                )
-                response = conversation.predict(human_input=user_question)
-        except Exception as e:
-            print(e)
-            if ("RateLimitError" in str(e)) or ("Rate limit" in str(e)) or ("rate_limit_exceeded" in str(e)):
-                conversation = LLMChain(
-                    llm=groq_chat2,
-                    prompt=prompt_template,
-                    verbose=False,
-                    memory=memory,
-                )
-                response = conversation.predict(human_input=user_question)
+    response = try_various_keys(groq_api_key, groq_api_key1, groq_api_key2, prompt_template, model, memory, user_question)
 
     return response
 
@@ -434,4 +403,48 @@ def truncate_scraped_content(content):
     temp = temp[0].split('Project Highlights')
     return temp[0]
 
+def get_user_intent(classifier_prompt,memory,user_question,groq_api_key,groq_api_key1,groq_api_key2,model):
+    prompt = ChatPromptTemplate.from_messages([
+         SystemMessage(content=classifier_prompt),
+         #MessagesPlaceholder(variable_name="chat_history"),  # To maintain context
+         HumanMessagePromptTemplate.from_template("{human_input}"),
+     ])
+    response=try_various_keys(groq_api_key,groq_api_key1,groq_api_key2,prompt,model,memory,user_question)
+    return response
+
+def try_various_keys(groq_api_key,groq_api_key1,groq_api_key2,prompt,model,memory,user_question):
+    groq_chat = ChatGroq(groq_api_key=groq_api_key, model=model, temperature=0.1, top_p=0.9)
+    groq_chat1 = ChatGroq(groq_api_key=groq_api_key1, model=model, temperature=0.1, top_p=0.9)
+    groq_chat2 = ChatGroq(groq_api_key=groq_api_key2, model=model, temperature=0.1, top_p=0.9)
+    try:
+        conversation = LLMChain(
+            llm=groq_chat,
+            prompt=prompt,
+            verbose=False,
+            memory=memory,
+        )
+        response = conversation.predict(human_input=user_question)
+    except Exception as e:
+        print(e)
+        try:
+            if ("RateLimitError" in str(e)) or ("Rate limit" in str(e)) or ("rate_limit_exceeded" in str(e)):
+                conversation = LLMChain(
+                    llm=groq_chat1,
+                    prompt=prompt,
+                    verbose=False,
+                    memory=memory,
+                )
+                response = conversation.predict(human_input=user_question)
+        except Exception as e:
+            print(e)
+            if ("RateLimitError" in str(e)) or ("Rate limit" in str(e)) or ("rate_limit_exceeded" in str(e)):
+                conversation = LLMChain(
+                    llm=groq_chat2,
+                    prompt=prompt,
+                    verbose=False,
+                    memory=memory,
+                )
+                response = conversation.predict(human_input=user_question)
+
+    return response
 
